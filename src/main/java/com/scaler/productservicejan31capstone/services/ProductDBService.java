@@ -28,6 +28,7 @@ public class ProductDBService implements ProductService
     @Override
     public Product getProductById(long id) throws ProductNotFoundException
     {
+
         Optional<Product> optionalProduct = productRepository.findById(id);
 
         if(optionalProduct.isEmpty())
