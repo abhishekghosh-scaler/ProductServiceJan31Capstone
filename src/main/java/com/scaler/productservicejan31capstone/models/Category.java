@@ -1,5 +1,6 @@
 package com.scaler.productservicejan31capstone.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,5 +18,6 @@ public class Category extends BaseModel
 
     @OneToMany(mappedBy = "category")
     @Fetch(FetchMode.JOIN)
+    @JsonIgnore
     private List<Product> products;
 }
