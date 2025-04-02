@@ -1,5 +1,6 @@
 package com.scaler.productservicejan31capstone.controllers;
 
+import com.scaler.productservicejan31capstone.commons.ApplicationCommons;
 import com.scaler.productservicejan31capstone.dtos.CreateFakeStoreProductDto;
 import com.scaler.productservicejan31capstone.dtos.ProductResponseDto;
 import com.scaler.productservicejan31capstone.exceptions.ProductNotFoundException;
@@ -20,16 +21,23 @@ public class ProductController
 {
 
     ProductService productService;
+    ApplicationCommons applicationCommons;
 
     public ProductController(@Qualifier("fakeStoreProductService")
-                             ProductService productService)
+                             ProductService productService,
+                             ApplicationCommons applicationCommons)
     {
         this.productService = productService;
+        this.applicationCommons = applicationCommons;
     }
 
     @GetMapping("/products/{id}")
     public ProductResponseDto getProductById(
-            @PathVariable("id") long id) throws ProductNotFoundException {
+            @PathVariable("id") long id,
+            @RequestHeader("Authorization") String token) throws ProductNotFoundException
+    {
+        //validating the token
+        applicationCommons.validateToken(token);
 
         Product product = productService.getProductById(id);
         ProductResponseDto productResponseDto = ProductResponseDto.from(product);
