@@ -21,7 +21,7 @@ public class ApplicationCommons
             throw new RuntimeException("Invalid token: token empty");
         }
 
-        String url = "http://UserServiceJan31Capstone/validate/" + token;
+        String url = "http://UserServiceJan31Capstone/users/validate/" + token;
         Boolean isValidToken = restTemplate.getForObject(url, Boolean.class);
 
         if(Boolean.FALSE.equals(isValidToken))
