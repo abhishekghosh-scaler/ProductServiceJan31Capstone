@@ -5,6 +5,7 @@ import com.scaler.productservicejan31capstone.models.Category;
 import com.scaler.productservicejan31capstone.models.Product;
 import com.scaler.productservicejan31capstone.repositories.CategoryRepository;
 import com.scaler.productservicejan31capstone.repositories.ProductRepository;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -12,17 +13,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("productDBService")
-public class ProductDBService implements ProductService
+public class ProductDBService implements ProductService, ProductAIService
 {
 
+    private final ChatClient chatClient;
     ProductRepository productRepository;
     CategoryRepository categoryRepository;
 
     public ProductDBService(ProductRepository productRepository,
-                            CategoryRepository categoryRepository)
+                            CategoryRepository categoryRepository, ChatClient chatClient)
     {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.chatClient = chatClient;
     }
 
     @Override
@@ -73,5 +76,37 @@ public class ProductDBService implements ProductService
         category.setName(name);
 
         return categoryRepository.save(category);
+    }
+
+    @Override
+    public Product createProductWithAIDescription(String name, double price, String imageUrl, String category)
+    {
+        Product product = new Product();
+        product.setName(name);
+        product.setPrice(price);
+        product.setImageUrl(imageUrl);
+
+        Category categoryObj = getCategoryFromDB(category);
+        product.setCategory(categoryObj);
+
+        String description = getDescriptionFromAI(product);
+        product.setDescription(description);
+
+        return productRepository.save(product);
+    }
+
+    private String getDescriptionFromAI(Product product)
+    {
+        String prompt = String.format(
+                "Generate a 150-word professional marketing description for a %s product named '%s'. " +
+                        "Key features: Priced at $%.2f, Category: %s. " +
+                        "Focus on benefits and unique selling points. Avoid technical jargon. Use markdown formatting.",
+                product.getCategory().getName().toLowerCase(),
+                product.getName(),
+                product.getPrice(),
+                product.getCategory().getName()
+        );
+
+        return chatClient.prompt().user(prompt).call().content();
     }
 }

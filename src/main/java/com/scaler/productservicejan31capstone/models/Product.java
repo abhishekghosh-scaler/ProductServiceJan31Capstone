@@ -1,5 +1,6 @@
 package com.scaler.productservicejan31capstone.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 @Entity
 public class Product extends BaseModel implements Serializable
 {
+    @Column(length = 10000)
     private String description;
     private String imageUrl;
     private double price;

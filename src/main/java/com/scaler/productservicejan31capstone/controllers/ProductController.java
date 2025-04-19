@@ -3,9 +3,11 @@ package com.scaler.productservicejan31capstone.controllers;
 import com.scaler.productservicejan31capstone.commons.ApplicationCommons;
 import com.scaler.productservicejan31capstone.dtos.CreateFakeStoreProductDto;
 import com.scaler.productservicejan31capstone.dtos.ProductResponseDto;
+import com.scaler.productservicejan31capstone.dtos.ProductWithoutDescDto;
 import com.scaler.productservicejan31capstone.exceptions.ProductNotFoundException;
 import com.scaler.productservicejan31capstone.models.Product;
 
+import com.scaler.productservicejan31capstone.services.ProductAIService;
 import com.scaler.productservicejan31capstone.services.ProductService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -20,15 +22,17 @@ import java.util.stream.Collectors;
 public class ProductController
 {
 
+    private final ProductAIService productAIService;
     ProductService productService;
     ApplicationCommons applicationCommons;
 
     public ProductController(@Qualifier("fakeStoreProductService")
                              ProductService productService,
-                             ApplicationCommons applicationCommons)
+                             ApplicationCommons applicationCommons, ProductAIService productAIService)
     {
         this.productService = productService;
         this.applicationCommons = applicationCommons;
+        this.productAIService = productAIService;
     }
 
     @GetMapping("/products/{id}")
@@ -79,6 +83,20 @@ public class ProductController
         ProductResponseDto productResponseDto = ProductResponseDto.from(product);
 
         return productResponseDto;
+    }
+
+    @PostMapping("/products-without-description")
+    public ProductResponseDto createProductWithAIDescription(
+            @RequestBody ProductWithoutDescDto productWithoutDescDto)
+    {
+        Product product = productAIService.createProductWithAIDescription(
+                productWithoutDescDto.getName(),
+                productWithoutDescDto.getPrice(),
+                productWithoutDescDto.getImageUrl(),
+                productWithoutDescDto.getCategory()
+                );
+
+        return ProductResponseDto.from(product);
     }
 
 //    @ExceptionHandler(NullPointerException.class)
