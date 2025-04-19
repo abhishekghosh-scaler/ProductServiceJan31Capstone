@@ -33,4 +33,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>
     List<Product> getProductsByCategoryNameNative(@Param("categoryName") String categoryName);
 
     Page<Product> findByNameContaining(String query, Pageable pageable);
+
+    @Query("select p from Product p where p.category=:category and p.price between :minPrice and :maxPrice and p.id != :excludeId")
+    List<Product> findSimilarInCategory(@Param("category") Category category,
+                                        @Param("minPrice") double minPrice,
+                                        @Param("maxPrice") double maxPrice,
+                                        @Param("excludeId") long excludeId);
 }

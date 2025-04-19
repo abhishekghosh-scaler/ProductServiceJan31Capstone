@@ -11,4 +11,7 @@ public interface ProductService
     List<Product> getAllProducts();
     Product createProduct(String name, String description, double price,
                   String imageUrl, String category);
+
+    Product createProductWithAIGeneratedDescription(String name, double price,
+                                                     String imageUrl, String category);
 }

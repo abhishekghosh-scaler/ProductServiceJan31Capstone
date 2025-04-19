@@ -91,4 +91,10 @@ public class FakeStoreProductService implements ProductService
 
          return fakeStoreProductDto.toProduct();
     }
+
+    @Override
+    public Product createProductWithAIGeneratedDescription(String name, double price, String imageUrl, String category)
+    {
+        return null;
+    }
 }

@@ -3,6 +3,7 @@ package com.scaler.productservicejan31capstone.controllers;
 import com.scaler.productservicejan31capstone.commons.ApplicationCommons;
 import com.scaler.productservicejan31capstone.dtos.CreateFakeStoreProductDto;
 import com.scaler.productservicejan31capstone.dtos.ProductResponseDto;
+import com.scaler.productservicejan31capstone.dtos.ProductWithoutDescriptionDto;
 import com.scaler.productservicejan31capstone.exceptions.ProductNotFoundException;
 import com.scaler.productservicejan31capstone.models.Product;
 
@@ -21,14 +22,14 @@ public class ProductController
 {
 
     ProductService productService;
-    ApplicationCommons applicationCommons;
+//    ApplicationCommons applicationCommons;
 
-    public ProductController(@Qualifier("fakeStoreProductService")
+    public ProductController(@Qualifier("productDBService")
                              ProductService productService,
                              ApplicationCommons applicationCommons)
     {
         this.productService = productService;
-        this.applicationCommons = applicationCommons;
+//        this.applicationCommons = applicationCommons;
     }
 
     @GetMapping("/products/{id}")
@@ -37,7 +38,7 @@ public class ProductController
             @RequestHeader("Authorization") String token) throws ProductNotFoundException
     {
         //validating the token
-        applicationCommons.validateToken(token);
+//        applicationCommons.validateToken(token);
 
         Product product = productService.getProductById(id);
         ProductResponseDto productResponseDto = ProductResponseDto.from(product);
@@ -77,8 +78,22 @@ public class ProductController
         );
 
         ProductResponseDto productResponseDto = ProductResponseDto.from(product);
-
         return productResponseDto;
+    }
+
+    @PostMapping("/products-without-description")
+    public ProductResponseDto
+    createProductWithoutDescription(@RequestBody ProductWithoutDescriptionDto
+                                            productWithoutDescriptionDto)
+    {
+        Product product = productService.createProductWithAIGeneratedDescription(
+                productWithoutDescriptionDto.getName(),
+                productWithoutDescriptionDto.getPrice(),
+                productWithoutDescriptionDto.getImageUrl(),
+                productWithoutDescriptionDto.getCategory()
+        );
+
+        return ProductResponseDto.from(product);
     }
 
 //    @ExceptionHandler(NullPointerException.class)
